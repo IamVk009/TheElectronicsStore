@@ -1,5 +1,6 @@
 package com.lucifer.electronics.store.dtos;
 
+import com.lucifer.electronics.store.validate.ImageNameValid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -34,5 +35,7 @@ public class UserDto {
     @NotBlank(message = "Write something about yourself..")
     private String about;
 
+//  Validating image with Custom Validator
+    @ImageNameValid(message = "Please enter valid image name")
     private String imageName;
 }
