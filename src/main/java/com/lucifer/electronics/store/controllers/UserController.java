@@ -3,6 +3,7 @@ package com.lucifer.electronics.store.controllers;
 import com.lucifer.electronics.store.dtos.ApiResponseMessage;
 import com.lucifer.electronics.store.dtos.UserDto;
 import com.lucifer.electronics.store.services.UserService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class UserController {
 
 //  Always send JSON as a response from controller instead of string and other type of data.
     @PostMapping("/create")
-    public ResponseEntity<ApiResponseMessage> createUser(@RequestBody UserDto userDto){
+    public ResponseEntity<ApiResponseMessage> createUser(@Valid @RequestBody UserDto userDto){
         userService.createUser(userDto);
         ApiResponseMessage message = ApiResponseMessage.builder()
                 .message("User Created Successfully.")
@@ -53,7 +54,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{userId}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable String userId, @RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> updateUser(@PathVariable String userId, @Valid @RequestBody UserDto userDto){
         return new ResponseEntity<>(userService.updateUser(userDto, userId), HttpStatus.OK);
     }
 
