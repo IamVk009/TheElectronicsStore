@@ -2,6 +2,7 @@ package com.lucifer.electronics.store.services.impl;
 
 import com.lucifer.electronics.store.dtos.UserDto;
 import com.lucifer.electronics.store.entities.User;
+import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
 import com.lucifer.electronics.store.repositories.UserRepository;
 import com.lucifer.electronics.store.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -41,19 +42,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User with given Id " + userId + " does not exist."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with given Id " + userId + " does not exist."));
         return entityToDto(user);
     }
 
     @Override
     public UserDto getUserByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User with given email " + email + " does not exist."));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User with given email " + email + " does not exist."));
         return entityToDto(user);
     }
 
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User with given Id " + userId + " does not exist."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with given Id " + userId + " does not exist."));
 
         user.setName(userDto.getName());
         user.setPassword(userDto.getPassword());
@@ -69,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User with Id " + userId + " not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with Id " + userId + " not found"));
         userRepository.delete(user);
     }
 
