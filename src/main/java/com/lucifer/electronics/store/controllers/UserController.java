@@ -1,6 +1,7 @@
 package com.lucifer.electronics.store.controllers;
 
 import com.lucifer.electronics.store.dtos.ApiResponseMessage;
+import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.UserDto;
 import com.lucifer.electronics.store.services.UserService;
 import jakarta.validation.Valid;
@@ -35,11 +36,11 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserDto>> getAllUsers(@RequestParam(defaultValue = "0") int pageNumber,
-                                                     @RequestParam(defaultValue = "10") int pageSize,
-                                                     @RequestParam(defaultValue = "userId") String sortBy,
-                                                     @RequestParam(defaultValue = "asc") String sortDirection) {
-        List<UserDto> allUsers = userService.getAllUsers(pageNumber, pageSize, sortBy, sortDirection);
+    public ResponseEntity<PageableResponse<UserDto>> getAllUsers(@RequestParam(defaultValue = "0") int pageNumber,
+                                                        @RequestParam(defaultValue = "10") int pageSize,
+                                                        @RequestParam(defaultValue = "userId") String sortBy,
+                                                        @RequestParam(defaultValue = "asc") String sortDirection) {
+        PageableResponse<UserDto> allUsers = userService.getAllUsers(pageNumber, pageSize, sortBy, sortDirection);
         logger.info("All Users Returned Successfully...");
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }

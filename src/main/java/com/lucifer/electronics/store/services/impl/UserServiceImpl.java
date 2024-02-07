@@ -1,5 +1,6 @@
 package com.lucifer.electronics.store.services.impl;
 
+import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.UserDto;
 import com.lucifer.electronics.store.entities.User;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllUsers(int pageNumber, int pageSize, String sortBy, String sortDirection) {
+    public PageableResponse<UserDto> getAllUsers(int pageNumber, int pageSize, String sortBy, String sortDirection) {
 //      Implementation of findAll() method without pagination
 //      List<User> users = userRepository.findAll();
 
@@ -52,7 +52,8 @@ public class UserServiceImpl implements UserService {
 
 //      Elite Implementation - Converting list of type User to list of type UserDto Using stream api
         List<UserDto> userDtoList = users.stream().map(user -> entityToDto(user)).toList();
-        return userDtoList;
+
+        return getPageableResponse(userDtoList, page);
     }
 
     @Override
@@ -124,5 +125,18 @@ public class UserServiceImpl implements UserService {
 //                .build();
 
         return mapper.map(user, UserDto.class);
+    }
+
+    private PageableResponse<UserDto> getPageableResponse(List<UserDto> userDtoList, Page<User> page){
+
+        PageableResponse<UserDto> response = new PageableResponse<UserDto>();
+        response.setContent(userDtoList);
+        response.setPageNumber(page.getNumber());
+        response.setPageSize(page.getSize());
+        response.setTotalPages(page.getTotalPages());
+        response.setTotalElements(page.getTotalElements());
+        response.setLastPage(page.isLast());
+
+        return response;
     }
 }
