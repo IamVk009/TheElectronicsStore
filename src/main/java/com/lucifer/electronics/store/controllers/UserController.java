@@ -22,9 +22,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-//  Always send JSON as a response from controller instead of string and other type of data.
+    //  Always send JSON as a response from controller instead of string and other type of data.
     @PostMapping("/create")
-    public ResponseEntity<ApiResponseMessage> createUser(@Valid @RequestBody UserDto userDto){
+    public ResponseEntity<ApiResponseMessage> createUser(@Valid @RequestBody UserDto userDto) {
         userService.createUser(userDto);
         ApiResponseMessage message = ApiResponseMessage.builder()
                 .message("User Created Successfully.")
@@ -35,31 +35,32 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserDto>> getAllUsers(){
-        List<UserDto> allUsers = userService.getAllUsers();
+    public ResponseEntity<List<UserDto>> getAllUsers(@RequestParam(defaultValue = "0") int pageNumber,
+                                                     @RequestParam(defaultValue = "10") int pageSize) {
+        List<UserDto> allUsers = userService.getAllUsers(pageNumber, pageSize);
         logger.info("All Users Returned Successfully...");
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
     @GetMapping("/id/{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable String userId){
+    public ResponseEntity<UserDto> getUserById(@PathVariable String userId) {
         UserDto user = userService.getUserById(userId);
         logger.info("User with Id = " + userId + " Returned Successfully...");
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email){
+    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
         return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
     }
 
     @PutMapping("/update/{userId}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable String userId, @Valid @RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> updateUser(@PathVariable String userId, @Valid @RequestBody UserDto userDto) {
         return new ResponseEntity<>(userService.updateUser(userDto, userId), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{userId}")
-    public ResponseEntity<ApiResponseMessage> deleteUserById(@PathVariable String userId){
+    public ResponseEntity<ApiResponseMessage> deleteUserById(@PathVariable String userId) {
         userService.deleteUser(userId);
         ApiResponseMessage message = ApiResponseMessage.builder()
                 .message("User Deleted Successfully...")
@@ -69,7 +70,7 @@ public class UserController {
     }
 
     @GetMapping("/search/{keyword}")
-    public ResponseEntity<List<UserDto>> searchUser(@PathVariable String keyword){
+    public ResponseEntity<List<UserDto>> searchUser(@PathVariable String keyword) {
         return new ResponseEntity<>(userService.searchUser(keyword), HttpStatus.OK);
     }
 
