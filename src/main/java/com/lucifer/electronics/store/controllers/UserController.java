@@ -36,8 +36,10 @@ public class UserController {
 
     @GetMapping("/all")
     public ResponseEntity<List<UserDto>> getAllUsers(@RequestParam(defaultValue = "0") int pageNumber,
-                                                     @RequestParam(defaultValue = "10") int pageSize) {
-        List<UserDto> allUsers = userService.getAllUsers(pageNumber, pageSize);
+                                                     @RequestParam(defaultValue = "10") int pageSize,
+                                                     @RequestParam(defaultValue = "userId") String sortBy,
+                                                     @RequestParam(defaultValue = "asc") String sortDirection) {
+        List<UserDto> allUsers = userService.getAllUsers(pageNumber, pageSize, sortBy, sortDirection);
         logger.info("All Users Returned Successfully...");
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }

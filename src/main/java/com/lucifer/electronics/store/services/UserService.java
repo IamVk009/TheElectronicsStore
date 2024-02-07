@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserService {
     void createUser(UserDto userDto);
 
-    List<UserDto> getAllUsers(int pageNumber, int pageSize);
+    List<UserDto> getAllUsers(int pageNumber, int pageSize, String sortBy, String sortDirection);
 
     UserDto getUserById(String userId);
 

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,13 +37,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllUsers(int pageNumber, int pageSize) {
+    public List<UserDto> getAllUsers(int pageNumber, int pageSize, String sortBy, String sortDirection) {
 //      Implementation of findAll() method without pagination
 //      List<User> users = userRepository.findAll();
 
-//      Implementing pagination
+//      Implementing pagination with sorting
+//      Creating Sort object
+        Sort sort = (sortDirection.equalsIgnoreCase("asc")? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending()));
 //      Creating pageable object using PageRequest implementation class of Pageable interface
-        PageRequest pageable = PageRequest.of(pageNumber, pageSize);
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<User> page = userRepository.findAll(pageable);
 //      Getting list of usres from page.
         List<User> users = page.getContent();
