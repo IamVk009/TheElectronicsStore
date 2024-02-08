@@ -49,9 +49,11 @@ public class FileServiceImpl implements FileService {
         }
     }
 
+//  Serve Image Service Method
     @Override
     public InputStream getImageFile(String filePath, String fileName) throws FileNotFoundException {
         String fileDestination = filePath + fileName;
+        logger.info("File Destination : {}", fileDestination);
         InputStream inputStream = new FileInputStream(fileDestination);
         return inputStream;
     }
