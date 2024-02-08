@@ -1,17 +1,24 @@
 package com.lucifer.electronics.store.controllers;
 
 import com.lucifer.electronics.store.dtos.ApiResponseMessage;
+import com.lucifer.electronics.store.dtos.ImageResponseMessage;
 import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.UserDto;
+import com.lucifer.electronics.store.services.FileService;
 import com.lucifer.electronics.store.services.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -22,6 +29,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FileService fileService;
+
+    @Value("${user.profile.image.path}")
+    private String uploadImagePath;
 
     //  Always send JSON as a response from controller instead of string and other type of data.
     @PostMapping("/create")
@@ -37,9 +50,9 @@ public class UserController {
 
     @GetMapping("/all")
     public ResponseEntity<PageableResponse<UserDto>> getAllUsers(@RequestParam(defaultValue = "0") int pageNumber,
-                                                        @RequestParam(defaultValue = "10") int pageSize,
-                                                        @RequestParam(defaultValue = "userId") String sortBy,
-                                                        @RequestParam(defaultValue = "asc") String sortDirection) {
+                                                                 @RequestParam(defaultValue = "10") int pageSize,
+                                                                 @RequestParam(defaultValue = "userId") String sortBy,
+                                                                 @RequestParam(defaultValue = "asc") String sortDirection) {
         PageableResponse<UserDto> allUsers = userService.getAllUsers(pageNumber, pageSize, sortBy, sortDirection);
         logger.info("All Users Returned Successfully...");
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
@@ -77,4 +90,25 @@ public class UserController {
         return new ResponseEntity<>(userService.searchUser(keyword), HttpStatus.OK);
     }
 
+//  Upload User Image Controller
+    @PostMapping(value = "/image/upload/{userId}")
+    public ResponseEntity<ImageResponseMessage> uploadImageFile(@PathVariable String userId,
+                                                                @RequestParam MultipartFile imageFile) throws IOException {
+
+//      Uploading imageFile
+        String imageFileName = fileService.uploadImageFile(imageFile, uploadImagePath);
+
+//      Updating existing user with newly uploaded imageName
+        UserDto user = userService.getUserById(userId);
+        user.setImageName(imageFileName);
+        UserDto userDto = userService.updateUser(user, userId);
+
+        ImageResponseMessage responseMessage = ImageResponseMessage.builder()
+                .imageFileName(imageFileName)
+                .message("Image Uploaded Successfully..")
+                .success(true)
+                .status(HttpStatus.CREATED)
+                .build();
+        return new ResponseEntity<>(responseMessage, HttpStatus.CREATED);
+    }
 }
