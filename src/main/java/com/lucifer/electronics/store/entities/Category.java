@@ -1,0 +1,30 @@
+package com.lucifer.electronics.store.entities;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "categories")
+public class Category {
+
+    @Id
+    @Column(name = "cat_id")
+    private String categoryId;
+
+    @Column(name = "cat_title", unique = true, length = 20, nullable = false)
+    private String title;
+
+    @Column(name = "cat_desc", length = 20)
+    private String description;
+
+    @Column(name = "cat_coverImg")
+    private String coverImage;
+}
