@@ -10,11 +10,20 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Value("${user.profile.image.path}")
+    private String uploadImagePath;
 
     @Override
     public void createUser(UserDto userDto) {
@@ -43,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
 //      Implementing pagination with sorting
 //      Creating Sort object
-        Sort sort = (sortDirection.equalsIgnoreCase("asc")? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending()));
+        Sort sort = (sortDirection.equalsIgnoreCase("asc") ? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending()));
 //      Creating pageable object using PageRequest implementation class of Pageable interface
         PageRequest pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<User> page = userRepository.findAll(pageable);
@@ -87,6 +99,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with Id " + userId + " not found"));
+
+        String imageName = user.getImageName();
+        String imageFileDestination = uploadImagePath + imageName;
+        logger.info("ImageFileDestination : {}", imageFileDestination);
+
+        try{
+//          Creating path to delete image from destination folder
+            Path path = Paths.get(imageFileDestination);
+//          Deleting image file
+            Files.delete(path);
+        } catch (NoSuchFileException e){
+            logger.error("User Image does not exist in folder");
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+//      Deleting user
         userRepository.delete(user);
     }
 
@@ -127,7 +157,7 @@ public class UserServiceImpl implements UserService {
         return mapper.map(user, UserDto.class);
     }
 
-    private PageableResponse<UserDto> getPageableResponse(List<UserDto> userDtoList, Page<User> page){
+    private PageableResponse<UserDto> getPageableResponse(List<UserDto> userDtoList, Page<User> page) {
 
         PageableResponse<UserDto> response = new PageableResponse<UserDto>();
         response.setContent(userDtoList);
