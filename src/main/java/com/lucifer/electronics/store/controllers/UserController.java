@@ -97,12 +97,11 @@ public class UserController {
     @PostMapping(value = "/image/upload/{userId}")
     public ResponseEntity<ImageResponseMessage> uploadImageFile(@PathVariable String userId,
                                                                 @RequestParam MultipartFile imageFile) throws IOException {
-
+//      Fetching user based on userId
+        UserDto user = userService.getUserById(userId);
 //      Uploading imageFile
         String imageFileName = fileService.uploadImageFile(imageFile, uploadImagePath);
-
 //      Updating existing user with newly uploaded imageName
-        UserDto user = userService.getUserById(userId);
         user.setImageName(imageFileName);
         UserDto userDto = userService.updateUser(user, userId);
 

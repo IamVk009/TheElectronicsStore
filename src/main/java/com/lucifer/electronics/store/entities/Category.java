@@ -25,6 +25,6 @@ public class Category {
     @Column(name = "cat_desc")
     private String description;
 
-    @Column(name = "cat_coverImg")
+    @Column(name = "cat_coverImg", nullable = false)
     private String coverImage;
 }

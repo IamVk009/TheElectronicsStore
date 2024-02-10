@@ -3,6 +3,7 @@ package com.lucifer.electronics.store.services;
 import com.lucifer.electronics.store.dtos.CategoryDto;
 import com.lucifer.electronics.store.dtos.PageableResponse;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CategoryService {
@@ -10,7 +11,7 @@ public interface CategoryService {
 
     CategoryDto updateCategory(CategoryDto categoryDto, String categoryId);
 
-    void deleteCategory(String categoryId);
+    void deleteCategory(String categoryId) throws IOException;
 
     PageableResponse<CategoryDto> getAllCategories(int pageSize, int pageNumber, String soryBy, String sortDirection);
 
