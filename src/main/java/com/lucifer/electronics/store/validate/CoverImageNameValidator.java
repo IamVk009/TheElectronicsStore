@@ -9,6 +9,6 @@ public class CoverImageNameValidator implements ConstraintValidator<CoverImageNa
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
         log.info("Executing CoverImageNameValidator..");
-        return s!= null;
+        return !s.isBlank();
     }
 }

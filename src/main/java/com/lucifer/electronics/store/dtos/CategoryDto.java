@@ -1,9 +1,7 @@
 package com.lucifer.electronics.store.dtos;
 
 import com.lucifer.electronics.store.validate.CoverImageNameValid;
-import com.lucifer.electronics.store.validate.ImageNameValid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -17,10 +15,10 @@ public class CategoryDto {
     private String categoryId;
 
     @NotBlank(message = "Category must have some title..")
-    @Size(min = 5, max = 20, message = "Title must be of min 5 characters..")
+    @Size(min = 4, message = "Title must be of minimum 4 characters")
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "Category must have some description")
     private String description;
 
     @CoverImageNameValid

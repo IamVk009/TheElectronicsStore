@@ -19,10 +19,10 @@ public class Category {
     @Column(name = "cat_id")
     private String categoryId;
 
-    @Column(name = "cat_title", unique = true, length = 20, nullable = false)
+    @Column(name = "cat_title", unique = true, nullable = false)
     private String title;
 
-    @Column(name = "cat_desc", length = 20)
+    @Column(name = "cat_desc")
     private String description;
 
     @Column(name = "cat_coverImg")
