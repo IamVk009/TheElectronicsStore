@@ -13,7 +13,7 @@ public interface CategoryService {
 
     void deleteCategory(String categoryId) throws IOException;
 
-    PageableResponse<CategoryDto> getAllCategories(int pageSize, int pageNumber, String soryBy, String sortDirection);
+    PageableResponse<CategoryDto> getAllCategories(int pageSize, int pageNumber, String sortBy, String sortDirection);
 
     CategoryDto getCategoryById(String categoryId);
 
