@@ -1,11 +1,9 @@
 package com.lucifer.electronics.store.controllers;
 
-import com.lucifer.electronics.store.dtos.ApiResponseMessage;
-import com.lucifer.electronics.store.dtos.CategoryDto;
-import com.lucifer.electronics.store.dtos.ImageResponseMessage;
-import com.lucifer.electronics.store.dtos.PageableResponse;
+import com.lucifer.electronics.store.dtos.*;
 import com.lucifer.electronics.store.services.CategoryService;
 import com.lucifer.electronics.store.services.FileService;
+import com.lucifer.electronics.store.services.ProductService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,9 @@ public class CategoryController {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private ProductService productService;
 
     @Value("${category.profile.image.path}")
     private String uploadCategoryImagePath;
@@ -107,6 +108,13 @@ public class CategoryController {
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
 //      Copying data from imageFile inputStream to response
         StreamUtils.copy(imageFile, response.getOutputStream());
+    }
+
+//  Creating product by adding it to proper category at the time of creation itself.
+    @PostMapping("/{categoryId}/products")
+    public ResponseEntity<ProductDto> createProductWithCategory(@PathVariable String categoryId, @RequestBody ProductDto productDto){
+        ProductDto productDtoWithCategory = productService.createProductWithCategory(productDto, categoryId);
+        return new ResponseEntity<>(productDtoWithCategory, HttpStatus.CREATED);
     }
 
 }

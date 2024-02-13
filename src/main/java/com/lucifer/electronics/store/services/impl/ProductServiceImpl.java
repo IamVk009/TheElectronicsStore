@@ -2,8 +2,10 @@ package com.lucifer.electronics.store.services.impl;
 
 import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.ProductDto;
+import com.lucifer.electronics.store.entities.Category;
 import com.lucifer.electronics.store.entities.Product;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
+import com.lucifer.electronics.store.repositories.CategoryRepository;
 import com.lucifer.electronics.store.repositories.ProductRepository;
 import com.lucifer.electronics.store.services.FileService;
 import com.lucifer.electronics.store.services.ProductService;
@@ -40,6 +42,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Value("${product.profile.image.path}")
     private String uploadProductImagePath;
@@ -139,6 +144,19 @@ public class ProductServiceImpl implements ProductService {
         InputStream imageFile = fileService.getImageFile(uploadProductImagePath, imageFileName);
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
         StreamUtils.copy(imageFile, response.getOutputStream());
+    }
+
+    @Override
+    public ProductDto createProductWithCategory(ProductDto productDto, String categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category with given Id does not exists...!"));
+        Product product = mapper.map(productDto, Product.class);
+
+        String productId = UUID.randomUUID().toString();
+        product.setProductId(productId);
+        product.setAddedDate(new Date());
+        product.setCategory(category);
+        Product savedProduct = productRepository.save(product);
+        return mapper.map(savedProduct, ProductDto.class);
     }
 
     private PageableResponse<ProductDto> getPageableResponse(List<ProductDto> productDtos, Page page) {

@@ -26,4 +26,6 @@ public interface ProductService {
     String uploadProductImage(String productId, MultipartFile imageFile) throws IOException;
 
     void serveProductImage(String productId, HttpServletResponse response) throws IOException;
+
+    ProductDto createProductWithCategory(ProductDto productDto, String categoryId);
 }
