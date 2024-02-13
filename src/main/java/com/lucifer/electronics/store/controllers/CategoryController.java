@@ -60,9 +60,9 @@ public class CategoryController {
     @GetMapping("/all")
     public ResponseEntity<PageableResponse<CategoryDto>> getAllCategories(@RequestParam(defaultValue = "3") int pageSize,
                                                                           @RequestParam(defaultValue = "0") int pageNumber,
-                                                                          @RequestParam(defaultValue = "title") String soryBy,
+                                                                          @RequestParam(defaultValue = "title") String sortBy,
                                                                           @RequestParam(defaultValue = "asc") String sortDirection) {
-        PageableResponse<CategoryDto> allCategories = categoryService.getAllCategories(pageSize, pageNumber, soryBy, sortDirection);
+        PageableResponse<CategoryDto> allCategories = categoryService.getAllCategories(pageSize, pageNumber, sortBy, sortDirection);
         return new ResponseEntity<>(allCategories, HttpStatus.OK);
     }
 
@@ -110,7 +110,7 @@ public class CategoryController {
         StreamUtils.copy(imageFile, response.getOutputStream());
     }
 
-//  Creating product by adding it to proper category at the time of creation itself.
+    //  Creating product by adding it to proper category at the time of creation itself.
     @PostMapping("/{categoryId}/products")
     public ResponseEntity<ProductDto> createProductWithCategory(@PathVariable String categoryId, @RequestBody ProductDto productDto) {
         ProductDto productDtoWithCategory = productService.createProductWithCategory(productDto, categoryId);
@@ -122,5 +122,16 @@ public class CategoryController {
     public ResponseEntity<ProductDto> updateProductWithCategoruId(@PathVariable String productId, @PathVariable String categoryId) {
         ProductDto productDto = productService.updateProductWithCategoruId(productId, categoryId);
         return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
+//  Get all products of same category
+    @GetMapping("/{categoryId}/product/all")
+    public ResponseEntity<PageableResponse<ProductDto>> getAllProductsOfSameCategory(@PathVariable String categoryId,
+                                                                                     @RequestParam(defaultValue = "3") int pageSize,
+                                                                                     @RequestParam(defaultValue = "0") int pageNumber,
+                                                                                     @RequestParam(defaultValue = "title") String sortBy,
+                                                                                     @RequestParam(defaultValue = "asc") String sortDirection) {
+        PageableResponse<ProductDto> products = productService.getAllProductsWithSameCategory(categoryId, pageNumber, pageSize, sortBy, sortDirection);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 }

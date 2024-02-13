@@ -168,6 +168,17 @@ public class ProductServiceImpl implements ProductService {
         return mapper.map(savedProduct, ProductDto.class);
     }
 
+    @Override
+    public PageableResponse<ProductDto> getAllProductsWithSameCategory(String categoryId, int pageNumber, int pageSize, String sortBy, String sortDirection) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category with given Id does not exist..!"));
+        Sort sort = (sortDirection.equalsIgnoreCase("asc")) ? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending());
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Product> productPage = productRepository.findByCategory(category, pageable);
+        List<Product> productList = productPage.getContent();
+        List<ProductDto> productDtoList = productList.stream().map(product -> mapper.map(product, ProductDto.class)).toList();
+        return getPageableResponse(productDtoList, productPage);
+    }
+
     private PageableResponse<ProductDto> getPageableResponse(List<ProductDto> productDtos, Page page) {
         PageableResponse<ProductDto> response = new PageableResponse<>();
         response.setContent(productDtos);
