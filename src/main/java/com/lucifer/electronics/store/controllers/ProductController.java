@@ -1,13 +1,18 @@
 package com.lucifer.electronics.store.controllers;
 
 import com.lucifer.electronics.store.dtos.ApiResponseMessage;
+import com.lucifer.electronics.store.dtos.ImageResponseMessage;
 import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.ProductDto;
 import com.lucifer.electronics.store.services.ProductService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/product")
@@ -71,4 +76,22 @@ public class ProductController {
         PageableResponse<ProductDto> products = productService.searchProduct(keyword, pageNumber, pageSize, sortBy, sortDirection);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
+
+    @PostMapping("/upload/image/{productId}")
+    public ResponseEntity<ImageResponseMessage> uploadProductImage(@PathVariable String productId, @RequestParam MultipartFile productImageFile) throws IOException {
+        String fileName = productService.uploadProductImage(productId, productImageFile);
+        ImageResponseMessage responseMessage = ImageResponseMessage.builder()
+                .imageFileName(fileName)
+                .message("Product Image uploaded successfully..!")
+                .success(true)
+                .status(HttpStatus.CREATED)
+                .build();
+        return new ResponseEntity<>(responseMessage, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/image/{productId}")
+    public void serveProductImage(@PathVariable String productId, HttpServletResponse response) throws IOException {
+        productService.serveProductImage(productId, response);
+    }
+
 }

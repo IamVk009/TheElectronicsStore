@@ -5,15 +5,27 @@ import com.lucifer.electronics.store.dtos.ProductDto;
 import com.lucifer.electronics.store.entities.Product;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
 import com.lucifer.electronics.store.repositories.ProductRepository;
+import com.lucifer.electronics.store.services.FileService;
 import com.lucifer.electronics.store.services.ProductService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +37,12 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     @Autowired
     private ModelMapper mapper;
+
+    @Autowired
+    private FileService fileService;
+
+    @Value("${product.profile.image.path}")
+    private String uploadProductImagePath;
 
     @Override
     public ProductDto createProduct(ProductDto productDto) {
@@ -56,6 +74,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(String productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product with given Id does not exist.."));
+//      Delete product image from folder location associated with corresponding product.
+        String imageName = product.getImageName();
+        String productImageDestination = uploadProductImagePath + imageName;
+        try {
+            Path path = Paths.get(productImageDestination);
+            Files.delete(path);
+        } catch (NoSuchFileException e) {
+            throw new RuntimeException(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         productRepository.delete(product);
     }
 
@@ -92,6 +121,24 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> page = productRepository.findByProductTitleContaining(keyword, pageable);
         List<ProductDto> productDtoList = page.stream().map(product -> mapper.map(product, ProductDto.class)).toList();
         return getPageableResponse(productDtoList, page);
+    }
+
+    @Override
+    public String uploadProductImage(String productId, MultipartFile imageFile) throws IOException {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product with given Id does not exist.."));
+        String fileName = fileService.uploadImageFile(imageFile, uploadProductImagePath);
+        product.setImageName(fileName);
+        productRepository.save(product);
+        return fileName;
+    }
+
+    @Override
+    public void serveProductImage(String productId, HttpServletResponse response) throws IOException {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product with given Id does not exist.."));
+        String imageFileName = product.getImageName();
+        InputStream imageFile = fileService.getImageFile(uploadProductImagePath, imageFileName);
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(imageFile, response.getOutputStream());
     }
 
     private PageableResponse<ProductDto> getPageableResponse(List<ProductDto> productDtos, Page page) {
