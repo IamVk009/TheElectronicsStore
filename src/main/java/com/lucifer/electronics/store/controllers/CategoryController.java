@@ -112,9 +112,15 @@ public class CategoryController {
 
 //  Creating product by adding it to proper category at the time of creation itself.
     @PostMapping("/{categoryId}/products")
-    public ResponseEntity<ProductDto> createProductWithCategory(@PathVariable String categoryId, @RequestBody ProductDto productDto){
+    public ResponseEntity<ProductDto> createProductWithCategory(@PathVariable String categoryId, @RequestBody ProductDto productDto) {
         ProductDto productDtoWithCategory = productService.createProductWithCategory(productDto, categoryId);
         return new ResponseEntity<>(productDtoWithCategory, HttpStatus.CREATED);
     }
 
+//  Update category of existing product
+    @PutMapping("/{categoryId}/products/{productId}")
+    public ResponseEntity<ProductDto> updateProductWithCategoruId(@PathVariable String productId, @PathVariable String categoryId) {
+        ProductDto productDto = productService.updateProductWithCategoruId(productId, categoryId);
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
 }

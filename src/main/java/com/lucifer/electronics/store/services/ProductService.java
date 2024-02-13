@@ -28,4 +28,6 @@ public interface ProductService {
     void serveProductImage(String productId, HttpServletResponse response) throws IOException;
 
     ProductDto createProductWithCategory(ProductDto productDto, String categoryId);
+
+    ProductDto updateProductWithCategoruId(String productId, String categoryId);
 }

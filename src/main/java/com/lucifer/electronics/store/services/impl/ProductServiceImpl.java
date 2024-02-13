@@ -159,6 +159,15 @@ public class ProductServiceImpl implements ProductService {
         return mapper.map(savedProduct, ProductDto.class);
     }
 
+    @Override
+    public ProductDto updateProductWithCategoruId(String productId, String categoryId) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product with given Id does not exist..!"));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category with given Id does not exist..!"));
+        product.setCategory(category);
+        Product savedProduct = productRepository.save(product);
+        return mapper.map(savedProduct, ProductDto.class);
+    }
+
     private PageableResponse<ProductDto> getPageableResponse(List<ProductDto> productDtos, Page page) {
         PageableResponse<ProductDto> response = new PageableResponse<>();
         response.setContent(productDtos);
