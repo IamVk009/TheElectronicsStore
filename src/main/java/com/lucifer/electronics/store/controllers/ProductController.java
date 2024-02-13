@@ -48,8 +48,8 @@ public class ProductController {
     public ResponseEntity<PageableResponse<ProductDto>> getAllProducts(@RequestParam(defaultValue = "1") int pageNumber,
                                                                        @RequestParam(defaultValue = "0") int pageSize,
                                                                        @RequestParam(defaultValue = "productTitle") String sortBy,
-                                                                       @RequestParam(defaultValue = "asc") String sortingDirection) {
-        PageableResponse<ProductDto> allProducts = productService.getAllProducts(pageNumber, pageSize, sortBy, sortingDirection);
+                                                                       @RequestParam(defaultValue = "asc") String sortDirection) {
+        PageableResponse<ProductDto> allProducts = productService.getAllProducts(pageNumber, pageSize, sortBy, sortDirection);
         return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
 
@@ -57,8 +57,8 @@ public class ProductController {
     public ResponseEntity<PageableResponse<ProductDto>> getAllLiveProducts(@RequestParam(defaultValue = "0") int pageNumber,
                                                                            @RequestParam(defaultValue = "5") int pageSize,
                                                                            @RequestParam(defaultValue = "productTitle") String sortBy,
-                                                                           @RequestParam(defaultValue = "asc") String sortingDirection) {
-        PageableResponse<ProductDto> allLiveProducts = productService.getAllLiveProducts(pageNumber, pageSize, sortBy, sortingDirection);
+                                                                           @RequestParam(defaultValue = "asc") String sortDirection) {
+        PageableResponse<ProductDto> allLiveProducts = productService.getAllLiveProducts(pageNumber, pageSize, sortBy, sortDirection);
         return new ResponseEntity<>(allLiveProducts, HttpStatus.OK);
     }
 
@@ -67,8 +67,8 @@ public class ProductController {
                                                                       @RequestParam(defaultValue = "0") int pageNumber,
                                                                       @RequestParam(defaultValue = "10") int pageSize,
                                                                       @RequestParam(defaultValue = "productTitle") String sortBy,
-                                                                      @RequestParam(defaultValue = "asc") String sortingDirection) {
-        PageableResponse<ProductDto> products = productService.searchProduct(keyword, pageNumber, pageSize, sortBy, sortingDirection);
+                                                                      @RequestParam(defaultValue = "asc") String sortDirection) {
+        PageableResponse<ProductDto> products = productService.searchProduct(keyword, pageNumber, pageSize, sortBy, sortDirection);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 }

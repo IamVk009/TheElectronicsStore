@@ -21,27 +21,20 @@ public class Product {
     @Column(name = "prod_id")
     private String productId;
 
-    @Column(name = "prod_title")
     private String productTitle;
 
     @Column(name = "prod_desc", length = 1000)
     private String description;
 
-    @Column(name = "prod_price")
     private int price;
 
-    @Column(name = "prod_dis_price")
     private int discountedPrice;
 
-    @Column(name = "prod_qtty")
     private int quantity;
 
-    @Column(name = "prod_date")
     private Date addedDate;
 
-    @Column(name = "prod_live")
-    private boolean isLive;
+    private boolean live;
 
-    @Column(name = "prod_stock")
-    private boolean isInStock;
+    private boolean stock;
 }

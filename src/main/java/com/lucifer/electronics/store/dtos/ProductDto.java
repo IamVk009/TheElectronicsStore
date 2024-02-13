@@ -25,7 +25,7 @@ public class ProductDto {
 
     private Date addedDate;
 
-    private boolean isLive;
+    private boolean live;
 
-    private boolean isInStock;
+    private boolean stock;
 }

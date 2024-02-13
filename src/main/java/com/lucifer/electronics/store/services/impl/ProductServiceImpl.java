@@ -14,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -26,6 +28,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto createProduct(ProductDto productDto) {
+//      Generating product Id
+        String productId = UUID.randomUUID().toString();
+        productDto.setProductId(productId);
+//      Add current date
+        productDto.setAddedDate(new Date());
         Product product = productRepository.save(mapper.map(productDto, Product.class));
         return mapper.map(product, ProductDto.class);
     }
@@ -39,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(productDto.getPrice());
         product.setDiscountedPrice(productDto.getDiscountedPrice());
         product.setQuantity(productDto.getQuantity());
-        product.setInStock(productDto.isInStock());
+        product.setStock(productDto.isStock());
         product.setLive(productDto.isLive());
 
         Product updatedProduct = productRepository.save(product);
@@ -73,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
     public PageableResponse<ProductDto> getAllLiveProducts(int pageNumber, int pageSize, String sortBy, String sortDirection) {
         Sort sort = (sortDirection.equalsIgnoreCase("asc")) ? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending());
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        Page<Product> page = productRepository.findByIsLiveTrue(pageable);
+        Page<Product> page = productRepository.findByLiveTrue(pageable);
         List<ProductDto> productDtoList = page.stream().map(product -> mapper.map(product, ProductDto.class)).toList();
         return getPageableResponse(productDtoList, page);
     }
@@ -82,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
     public PageableResponse<ProductDto> searchProduct(String keyword, int pageNumber, int pageSize, String sortBy, String sortDirection) {
         Sort sort = (sortDirection.equalsIgnoreCase("asc")) ? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending());
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        Page<Product> page = productRepository.findByProductTitleEqualsIgnoreCase(keyword, pageable);
+        Page<Product> page = productRepository.findByProductTitleContaining(keyword, pageable);
         List<ProductDto> productDtoList = page.stream().map(product -> mapper.map(product, ProductDto.class)).toList();
         return getPageableResponse(productDtoList, page);
     }
@@ -94,6 +101,7 @@ public class ProductServiceImpl implements ProductService {
         response.setTotalElements(page.getTotalElements());
         response.setPageNumber(page.getNumber());
         response.setLastPage(page.isLast());
+        response.setPageSize(page.getSize());
 
         return response;
     }
