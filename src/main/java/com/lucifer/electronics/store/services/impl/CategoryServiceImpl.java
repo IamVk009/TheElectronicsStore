@@ -4,6 +4,7 @@ import com.lucifer.electronics.store.dtos.CategoryDto;
 import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.entities.Category;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
+import com.lucifer.electronics.store.helper.Helper;
 import com.lucifer.electronics.store.repositories.CategoryRepository;
 import com.lucifer.electronics.store.services.CategoryService;
 import lombok.extern.slf4j.Slf4j;
@@ -82,10 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
 //      Creating pageable object using PageRequest implementation class of Pageable interface
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Category> page = categoryRepository.findAll(pageable);
-        List<Category> categoryList = page.getContent();
-//      Converting list of Category Objects into list of Category DTO objects using stream api
-        List<CategoryDto> categoryDtoList = categoryList.stream().map(category -> modelMapper.map(category, CategoryDto.class)).toList();
-        return getPageableResponse(categoryDtoList, page);
+        return Helper.getPageableResponse(page, CategoryDto.class);
     }
 
     @Override
@@ -99,17 +97,5 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> categoryList = categoryRepository.findByTitleContainingIgnoreCase(categoryTitle);
         List<CategoryDto> categoryDtoList = categoryList.stream().map(category -> modelMapper.map(category, CategoryDto.class)).toList();
         return categoryDtoList;
-    }
-
-    private PageableResponse<CategoryDto> getPageableResponse(List<CategoryDto> categoryDtoList, Page page) {
-        PageableResponse<CategoryDto> response = new PageableResponse<>();
-        response.setContent(categoryDtoList);
-        response.setTotalElements(page.getTotalElements());
-        response.setPageSize(page.getSize());
-        response.setPageNumber(page.getNumber());
-        response.setTotalPages(page.getTotalPages());
-        response.setLastPage(page.isLast());
-
-        return response;
     }
 }

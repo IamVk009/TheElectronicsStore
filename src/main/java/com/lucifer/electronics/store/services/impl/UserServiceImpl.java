@@ -4,6 +4,7 @@ import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.UserDto;
 import com.lucifer.electronics.store.entities.User;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
+import com.lucifer.electronics.store.helper.Helper;
 import com.lucifer.electronics.store.repositories.UserRepository;
 import com.lucifer.electronics.store.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -16,10 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -60,12 +58,11 @@ public class UserServiceImpl implements UserService {
         PageRequest pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<User> page = userRepository.findAll(pageable);
 //      Getting list of usres from page.
-        List<User> users = page.getContent();
+//      List<User> users = page.getContent();
 
 //      Elite Implementation - Converting list of type User to list of type UserDto Using stream api
-        List<UserDto> userDtoList = users.stream().map(user -> entityToDto(user)).toList();
-
-        return getPageableResponse(userDtoList, page);
+//      List<UserDto> userDtoList = users.stream().map(user -> entityToDto(user)).toList();
+        return Helper.getPageableResponse(page, UserDto.class);
     }
 
     @Override
@@ -104,15 +101,15 @@ public class UserServiceImpl implements UserService {
         String imageFileDestination = uploadImagePath + imageName;
         logger.info("ImageFileDestination : {}", imageFileDestination);
 
-        try{
+        try {
 //          Creating path to delete image from destination folder
             Path path = Paths.get(imageFileDestination);
 //          Deleting image file
             Files.delete(path);
-        } catch (NoSuchFileException e){
+        } catch (NoSuchFileException e) {
             logger.error("User Image does not exist in folder");
             e.printStackTrace();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -155,18 +152,5 @@ public class UserServiceImpl implements UserService {
 //                .build();
 
         return mapper.map(user, UserDto.class);
-    }
-
-    private PageableResponse<UserDto> getPageableResponse(List<UserDto> userDtoList, Page<User> page) {
-
-        PageableResponse<UserDto> response = new PageableResponse<UserDto>();
-        response.setContent(userDtoList);
-        response.setPageNumber(page.getNumber());
-        response.setPageSize(page.getSize());
-        response.setTotalPages(page.getTotalPages());
-        response.setTotalElements(page.getTotalElements());
-        response.setLastPage(page.isLast());
-
-        return response;
     }
 }

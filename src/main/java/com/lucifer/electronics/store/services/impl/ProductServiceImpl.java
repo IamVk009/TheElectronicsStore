@@ -5,6 +5,7 @@ import com.lucifer.electronics.store.dtos.ProductDto;
 import com.lucifer.electronics.store.entities.Category;
 import com.lucifer.electronics.store.entities.Product;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
+import com.lucifer.electronics.store.helper.Helper;
 import com.lucifer.electronics.store.repositories.CategoryRepository;
 import com.lucifer.electronics.store.repositories.ProductRepository;
 import com.lucifer.electronics.store.services.FileService;
@@ -29,7 +30,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -104,10 +104,7 @@ public class ProductServiceImpl implements ProductService {
         Sort sort = (sortDirection.equalsIgnoreCase("asc")) ? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending());
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Product> page = productRepository.findAll(pageable);
-        List<Product> productList = page.getContent();
-
-        List<ProductDto> productDtoList = productList.stream().map(product -> mapper.map(product, ProductDto.class)).toList();
-        return getPageableResponse(productDtoList, page);
+        return Helper.getPageableResponse(page, ProductDto.class);
     }
 
     @Override
@@ -115,8 +112,7 @@ public class ProductServiceImpl implements ProductService {
         Sort sort = (sortDirection.equalsIgnoreCase("asc")) ? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending());
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Product> page = productRepository.findByLiveTrue(pageable);
-        List<ProductDto> productDtoList = page.stream().map(product -> mapper.map(product, ProductDto.class)).toList();
-        return getPageableResponse(productDtoList, page);
+        return Helper.getPageableResponse(page, ProductDto.class);
     }
 
     @Override
@@ -124,8 +120,7 @@ public class ProductServiceImpl implements ProductService {
         Sort sort = (sortDirection.equalsIgnoreCase("asc")) ? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending());
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Product> page = productRepository.findByProductTitleContaining(keyword, pageable);
-        List<ProductDto> productDtoList = page.stream().map(product -> mapper.map(product, ProductDto.class)).toList();
-        return getPageableResponse(productDtoList, page);
+        return Helper.getPageableResponse(page, ProductDto.class);
     }
 
     @Override
@@ -174,20 +169,7 @@ public class ProductServiceImpl implements ProductService {
         Sort sort = (sortDirection.equalsIgnoreCase("asc")) ? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending());
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Product> productPage = productRepository.findByCategory(category, pageable);
-        List<Product> productList = productPage.getContent();
-        List<ProductDto> productDtoList = productList.stream().map(product -> mapper.map(product, ProductDto.class)).toList();
-        return getPageableResponse(productDtoList, productPage);
+        return Helper.getPageableResponse(productPage, ProductDto.class);
     }
 
-    private PageableResponse<ProductDto> getPageableResponse(List<ProductDto> productDtos, Page page) {
-        PageableResponse<ProductDto> response = new PageableResponse<>();
-        response.setContent(productDtos);
-        response.setTotalPages(page.getTotalPages());
-        response.setTotalElements(page.getTotalElements());
-        response.setPageNumber(page.getNumber());
-        response.setLastPage(page.isLast());
-        response.setPageSize(page.getSize());
-
-        return response;
-    }
 }
