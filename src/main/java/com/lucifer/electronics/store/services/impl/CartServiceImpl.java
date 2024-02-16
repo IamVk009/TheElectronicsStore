@@ -7,6 +7,7 @@ import com.lucifer.electronics.store.entities.CartItem;
 import com.lucifer.electronics.store.entities.Product;
 import com.lucifer.electronics.store.entities.User;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
+import com.lucifer.electronics.store.repositories.CartItemRepository;
 import com.lucifer.electronics.store.repositories.CartRepository;
 import com.lucifer.electronics.store.repositories.ProductRepository;
 import com.lucifer.electronics.store.repositories.UserRepository;
@@ -34,6 +35,9 @@ public class CartServiceImpl implements CartService {
 
     @Autowired
     private CartRepository cartRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
 
     @Autowired
     ModelMapper mapper;
@@ -110,5 +114,22 @@ public class CartServiceImpl implements CartService {
 //      Saving the card to DB
         Cart updatedCart = cartRepository.save(cart);
         return mapper.map(updatedCart, CartDto.class);
+    }
+
+//  Method 2 : Delete Item from Cart
+    @Override
+    public void deleteItemFromCart(int cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(() -> new ResourceNotFoundException("CartItem with given Id does not exist..!"));
+        cartItemRepository.delete(cartItem);
+    }
+
+//  Method 3 : Clear all items from Cart
+    @Override
+    public void clearCart(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with given Id does not exist.."));
+        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("This User does not have any associated Cart"));
+        List<CartItem> cartItemList = cart.getCartItemList();
+        cartItemList.clear();
+        cartRepository.save(cart);
     }
 }
