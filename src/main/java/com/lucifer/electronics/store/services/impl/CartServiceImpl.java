@@ -132,4 +132,12 @@ public class CartServiceImpl implements CartService {
         cartItemList.clear();
         cartRepository.save(cart);
     }
+
+//  Method 4 : Fetch cart of particular user
+    @Override
+    public CartDto getCartByUser(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with given Id does not exist.."));
+        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("This User does not have any associated Cart"));
+        return mapper.map(cart, CartDto.class);
+    }
 }
