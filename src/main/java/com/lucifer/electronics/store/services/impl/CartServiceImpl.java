@@ -6,6 +6,7 @@ import com.lucifer.electronics.store.entities.Cart;
 import com.lucifer.electronics.store.entities.CartItem;
 import com.lucifer.electronics.store.entities.Product;
 import com.lucifer.electronics.store.entities.User;
+import com.lucifer.electronics.store.exceptions.BadApiRequestException;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
 import com.lucifer.electronics.store.repositories.CartItemRepository;
 import com.lucifer.electronics.store.repositories.CartRepository;
@@ -21,7 +22,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,7 +42,7 @@ public class CartServiceImpl implements CartService {
     private CartItemRepository cartItemRepository;
 
     @Autowired
-    ModelMapper mapper;
+    private ModelMapper mapper;
 
 //    Method 1 : Add items to Cart
 //    Case 1 - : If Cart for the user already exists, add the item to that cart.
@@ -59,6 +61,10 @@ public class CartServiceImpl implements CartService {
 //      Extracting request params from AddItemToCartRequest.
         String productId = request.getProductId();
         int quantity = request.getQuantity();
+
+        if( quantity <= 0){
+            throw  new BadApiRequestException("Quantity must be greater than 0");
+        }
 //      Fetching product from DB using productId.
         Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Produt with given Id does not exists..!"));
 //      Fetching user from DB using userId.
@@ -77,22 +83,24 @@ public class CartServiceImpl implements CartService {
 //          Setting created date to cart.
             cart.setCreatedDate(new Date());
         }
-
-        AtomicBoolean updated = new AtomicBoolean(false);
+        log.info("Cart1 : {} ", cart.getUser());
+        AtomicReference<Boolean> updated = new AtomicReference<>(false);
 //      If item which we are going to add in the cart already exists, then increase the number of items and totalCartPrice of the cart.
-        List<CartItem> cartItemList = cart.getCartItemList();
-        List<CartItem> updatedCartItemList = cartItemList.stream().map(cartItem -> {
-            if (cartItem.getProduct().getProductId().equals(productId)) {
-                cartItem.setItemQuantity(quantity);
-                cartItem.setTotalCartPrice(quantity * product.getPrice());
+        List<CartItem> items = cart.getCartItemList();
+        List<CartItem> updatedItemList = items.stream().map(item -> {
+
+            if (item.getProduct().getProductId().equals(productId)) {
+                item.setItemQuantity(quantity);
+                item.setTotalCartPrice(quantity * product.getDiscountedPrice());
                 updated.set(true);
             }
-            return cartItem;
-        }).toList();
 
+            return item;
+        }).collect(Collectors.toList());
+        log.info("UpdatedItemList = {} ", updatedItemList);
 //      Setting updatedItemsList to the cart.
-        cart.setCartItemList(updatedCartItemList);
-
+//      cart.setCartItemList(updatedItemList);
+        log.info("Cart2 = {} ", cart);
 //      If Cart is New -  Performing operation on cart --------------------
 
         if (!updated.get()) {
@@ -103,27 +111,33 @@ public class CartServiceImpl implements CartService {
                     .totalCartPrice(quantity * product.getDiscountedPrice())
                     .cart(cart)
                     .build();
-
-//          Adding above cart to cartItemList.
+            log.info("CartItem : {} ", cartItem);
+//          Adding above cartItem to cartItemList.
             cart.getCartItemList().add(cartItem);
         }
-
+        log.info("Cart 3 : {} ", cart);
+        log.info("User : {} ", user);
 //      Since its a new cart, we need to set user to this cart.
         cart.setUser(user);
-
+        log.info("Cart 4: {} ", cart.getUser());
 //      Saving the card to DB
         Cart updatedCart = cartRepository.save(cart);
+        log.info("Cart 5 : {} ", updatedCart);
+//        List<CartItem> cartItemList1 = updatedCart.getCartItemList();
+//        log.info("cartItemList : {}", cartItemList1);
+        CartDto mapped = mapper.map(updatedCart, CartDto.class);
+        log.info("Mapped : {}", mapped);
         return mapper.map(updatedCart, CartDto.class);
     }
 
-//  Method 2 : Delete Item from Cart
+    //  Method 2 : Delete Item from Cart
     @Override
     public void deleteItemFromCart(int cartItemId) {
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(() -> new ResourceNotFoundException("CartItem with given Id does not exist..!"));
         cartItemRepository.delete(cartItem);
     }
 
-//  Method 3 : Clear all items from Cart
+    //  Method 3 : Clear all items from Cart
     @Override
     public void clearCart(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with given Id does not exist.."));
@@ -133,7 +147,7 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(cart);
     }
 
-//  Method 4 : Fetch cart of particular user
+    //  Method 4 : Fetch cart of particular user
     @Override
     public CartDto getCartByUser(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with given Id does not exist.."));

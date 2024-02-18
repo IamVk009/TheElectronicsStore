@@ -15,7 +15,6 @@ import java.util.Date;
 public class Product {
 
     @Id
-    @Column(name = "prod_id")
     private String productId;
 
     private String productTitle;
