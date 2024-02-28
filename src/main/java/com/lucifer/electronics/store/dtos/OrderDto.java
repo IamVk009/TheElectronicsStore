@@ -1,9 +1,6 @@
 package com.lucifer.electronics.store.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +10,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@ToString
 public class OrderDto {
 
     private String orderId;
@@ -32,8 +31,6 @@ public class OrderDto {
     private Date orderDate = new Date();
 
     private Date deliveredDate;
-
-    private UserDto user;
 
     private List<OrderItemDto> orderItems = new ArrayList<>();
 }

@@ -9,11 +9,11 @@ import java.util.List;
 @Service
 public interface OrderService {
 
-    OrderDto createOrder(String userId, OrderDto orderDto);
+    OrderDto createOrder(String userId, OrderDto orderDto, String cartId);
 
     void removeOrder(String orderId);
 
-    List<OrderDto> getAllOrderOfUser(String userId);
+    List<OrderDto> getAllOrdersOfUser(String userId);
 
     PageableResponse<OrderDto> getAllOrders(int pageNumber, int pageSize, String sortBy, String sortDirection);
 }
