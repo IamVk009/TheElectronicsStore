@@ -6,14 +6,19 @@ import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.entities.*;
 import com.lucifer.electronics.store.exceptions.BadApiRequestException;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
+import com.lucifer.electronics.store.helper.Helper;
 import com.lucifer.electronics.store.repositories.CartRepository;
 import com.lucifer.electronics.store.repositories.OrderRepository;
 import com.lucifer.electronics.store.repositories.UserRepository;
 import com.lucifer.electronics.store.services.OrderService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -94,15 +99,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void removeOrder(String orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order with given Id does not exist.."));
+        orderRepository.delete(order);
     }
 
     @Override
     public List<OrderDto> getAllOrdersOfUser(String userId) {
-        return null;
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with given id does not exist.."));
+        List<Order> orders = orderRepository.findByUser(user);
+        List<OrderDto> orderDtoList = orders.stream().map(order -> mapper.map(order, OrderDto.class)).toList();
+        return orderDtoList;
     }
 
     @Override
     public PageableResponse<OrderDto> getAllOrders(int pageNumber, int pageSize, String sortBy, String sortDirection) {
-        return null;
+        Sort sort = (sortDirection.equalsIgnoreCase("asc")) ? (Sort.by(sortBy).ascending()) : (Sort.by(sortBy).descending());
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Order> orders = orderRepository.findAll(pageable);
+        return Helper.getPageableResponse(orders, OrderDto.class);
     }
 }
