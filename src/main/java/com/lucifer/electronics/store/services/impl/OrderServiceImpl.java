@@ -1,5 +1,6 @@
 package com.lucifer.electronics.store.services.impl;
 
+import com.lucifer.electronics.store.dtos.CreateOrderRequest;
 import com.lucifer.electronics.store.dtos.OrderDto;
 import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.entities.*;
@@ -34,7 +35,11 @@ public class OrderServiceImpl implements OrderService {
     private ModelMapper mapper;
 
     @Override
-    public OrderDto createOrder(String userId, OrderDto orderDto, String cartId) {
+    public OrderDto createOrder(CreateOrderRequest createOrderRequest) {
+
+        String userId = createOrderRequest.getUserId();
+        String cartId = createOrderRequest.getCartId();
+
 //      Fetching user
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with given Id does not exist.."));
 //      Fetching Cart
@@ -47,13 +52,13 @@ public class OrderServiceImpl implements OrderService {
 
 //      Creating new order
         Order order = Order.builder()
-                .billingName(orderDto.getBillingName())
-                .billingPhone(orderDto.getBillingPhone())
-                .billingAddress(orderDto.getBillingAddress())
+                .billingName(createOrderRequest.getBillingName())
+                .billingPhone(createOrderRequest.getBillingPhone())
+                .billingAddress(createOrderRequest.getBillingAddress())
                 .orderDate(new Date())
-                .deliveredDate(orderDto.getDeliveredDate())
-                .paymentStatus(orderDto.getPaymentStatus())
-                .orderStatus(orderDto.getOrderStatus())
+                .deliveredDate(createOrderRequest.getDeliveredDate())
+                .paymentStatus(createOrderRequest.getPaymentStatus())
+                .orderStatus(createOrderRequest.getOrderStatus())
                 .orderId(UUID.randomUUID().toString())
                 .user(user)
                 .build();
