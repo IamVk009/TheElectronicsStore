@@ -3,6 +3,7 @@ package com.lucifer.electronics.store.services;
 import com.lucifer.electronics.store.dtos.CreateOrderRequest;
 import com.lucifer.electronics.store.dtos.OrderDto;
 import com.lucifer.electronics.store.dtos.PageableResponse;
+import com.lucifer.electronics.store.dtos.UpdateOrderRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface OrderService {
     List<OrderDto> getAllOrdersOfUser(String userId);
 
     PageableResponse<OrderDto> getAllOrders(int pageNumber, int pageSize, String sortBy, String sortDirection);
+
+    OrderDto updateOrder(String orderId, UpdateOrderRequest updateOrderRequest);
 }

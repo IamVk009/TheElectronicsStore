@@ -1,9 +1,6 @@
 package com.lucifer.electronics.store.controllers;
 
-import com.lucifer.electronics.store.dtos.ApiResponseMessage;
-import com.lucifer.electronics.store.dtos.CreateOrderRequest;
-import com.lucifer.electronics.store.dtos.OrderDto;
-import com.lucifer.electronics.store.dtos.PageableResponse;
+import com.lucifer.electronics.store.dtos.*;
 import com.lucifer.electronics.store.services.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +43,15 @@ public class OrderController {
     public ResponseEntity<PageableResponse<OrderDto>> getAllOrders(@RequestParam(defaultValue = "0") int pageNumber,
                                                                    @RequestParam(defaultValue = "3") int pageSize,
                                                                    @RequestParam(defaultValue = "orderId") String sortBy,
-                                                                   @RequestParam(defaultValue = "asc") String sortDirection) {
+                                                                   @RequestParam(defaultValue = "desc") String sortDirection) {
 
         PageableResponse<OrderDto> allOrders = orderService.getAllOrders(pageNumber, pageSize, sortBy, sortDirection);
         return new ResponseEntity<>(allOrders, HttpStatus.OK);
+    }
+
+    @PutMapping("/update/{orderId}")
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable String orderId, @RequestBody UpdateOrderRequest updateOrderRequest){
+        OrderDto updateOrder = orderService.updateOrder(orderId, updateOrderRequest);
+        return new ResponseEntity<>(updateOrder, HttpStatus.OK);
     }
 }

@@ -3,6 +3,7 @@ package com.lucifer.electronics.store.services.impl;
 import com.lucifer.electronics.store.dtos.CreateOrderRequest;
 import com.lucifer.electronics.store.dtos.OrderDto;
 import com.lucifer.electronics.store.dtos.PageableResponse;
+import com.lucifer.electronics.store.dtos.UpdateOrderRequest;
 import com.lucifer.electronics.store.entities.*;
 import com.lucifer.electronics.store.exceptions.BadApiRequestException;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
@@ -116,5 +117,16 @@ public class OrderServiceImpl implements OrderService {
         PageRequest pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Order> orders = orderRepository.findAll(pageable);
         return Helper.getPageableResponse(orders, OrderDto.class);
+    }
+
+    @Override
+    public OrderDto updateOrder(String orderId, UpdateOrderRequest updateOrderRequest) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order with given Id does not exist.."));
+        order.setOrderStatus(updateOrderRequest.getOrderStatus());
+        order.setPaymentStatus(updateOrderRequest.getPaymentStatus());
+        order.setDeliveredDate(updateOrderRequest.getDeliveredDate());
+
+        Order updatedOrder = orderRepository.save(order);
+        return mapper.map(updatedOrder, OrderDto.class);
     }
 }
