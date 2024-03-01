@@ -21,14 +21,14 @@ public class SecurityConfig {
                 .username("Aaron")
 //               Encoding the password using password encoder bean declared below.
                 .password(passwordEncoder().encode("finch"))
-                .roles("Admin")
+                .roles("ADMIN")
                 .build();
 
 //      Creating User-2
         UserDetails normalUser = User.builder()
                 .username("Michael")
                 .password(passwordEncoder().encode("pass"))
-                .roles("normal")
+                .roles("NORMAL")
                 .build();
 
 //      InMemoryUserDetailsManager is an implementation class of UserDetailsService
