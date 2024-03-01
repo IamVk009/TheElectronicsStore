@@ -1,5 +1,7 @@
 package com.lucifer.electronics.store.controllers;
 
+import com.lucifer.electronics.store.dtos.UserDto;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,9 @@ public class AuthController {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private ModelMapper mapper;
+
     /**
      * This method fetches details of the currently logged-in user, such as username, authorities, etc.,
      * and returns them as a ResponseEntity with an HTTP status of OK.
@@ -26,12 +31,12 @@ public class AuthController {
      * @return
      */
     @GetMapping("/current/user")
-    public ResponseEntity<UserDetails> getLoggedInUserDetails(Principal principal) {
+    public ResponseEntity<UserDto> getLoggedInUserDetails(Principal principal) {
 //      Retrieving the name of the currently authenticated user from the Principal object.
         String name = principal.getName();
 
 //      Retrieving UserDetails for the logged-in user by invoking the loadUserByUsername method of a UserDetailsService implementation.
         UserDetails userDetails = userDetailsService.loadUserByUsername(name);
-        return new ResponseEntity<>(userDetails, HttpStatus.OK);
+        return new ResponseEntity<>(mapper.map(userDetails, UserDto.class), HttpStatus.OK);
     }
 }
