@@ -4,12 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
@@ -66,7 +69,7 @@ public class SecurityConfig {
       loadUserByUsername method of UserDetailsService interface.
 */
 
-//  Autowiring CustomUserDetailService
+    //  Autowiring CustomUserDetailService
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -91,9 +94,37 @@ public class SecurityConfig {
         return daoAuthenticationProvider;
     }
 
-//  This bean is responsible for encoding passwords using the BCrypt hashing algorithm.
+    //  This bean is responsible for encoding passwords using the BCrypt hashing algorithm.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+//    Implementing basic Authentication using Spring Security (Using this we will be able to pass username and
+//    password in Postman Authorization section or we need to enter those login credentials inside the browser where
+//    alert box asking for the credentials will be generated.
+
+    /**
+     * SecurityFilterChain : This method configures the security filter chain, which handles incoming requests and
+     *                       applies security rules.
+     *
+     * @param httpSecurity :  This parameter allows you to configure security settings for HTTP requests.
+     *                        It provides methods for customizing various aspects of security, such as CSRF protection,
+     *                        CORS configuration, request authorization, etc.
+     * @return Configured HttpSecurity object, which represents the configured security filter chain.
+     */
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .csrf(csrf -> csrf.disable())  // Disabling CSRF (Cross-Site Request Forgery) Protection
+                .cors(cors -> cors.disable())  // Disabling CORS (Cross-Origin Resource Sharing) Protection
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+//               configuring HTTP Basic authentication, which prompts the client to provide a username and password for
+//               authentication. The Customizer.withDefaults() method applies default settings for HTTP Basic authentication.
+                .httpBasic(Customizer.withDefaults());
+        return httpSecurity.build();
     }
 }
