@@ -20,7 +20,7 @@ import java.io.IOException;
 
 /**
  * For any incoming request, this Filter class gets executed. It checks if the request has valid JWT token.
- * If it has valid JWT token, then it sets the Authentication in the context, to specify that the current user is authenticated.
+ * If it has valid JWT token, then it sets the Authentication in the security context, to specify that the current user is authenticated.
  * It Performs following tasks -
  *  1. Get JWT token from the request
  *  2. Validate the token.
@@ -38,22 +38,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    /**
+     * This method is responsible for processing incoming HTTP requests and responses and optionally modifying them or performing additional processing.
+     * @param request - incoming HTTP request from the client.
+     * @param response - HTTP response that will be sent back to the client.
+     * @param filterChain - The chain of filters configured in the Spring application. The doFilterInternal method typically delegates further processing of the request to the next filter in the chain by calling filterChain.doFilter(request, response).
+     * @throws ServletException - Checked exception
+     * @throws IOException - Checked exception
+     *
+     * Overall, the doFilterInternal method serves as the entry point for custom filter logic and provides a way to intercept and manipulate incoming HTTP requests and responses in a Spring application.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestHeader = request.getHeader("Authorization");
         log.info("Header : {}", requestHeader);
 
-//      Token example - Bearer 47357357fkfajlkfljhfajjhkds
+//      Token example - Bearer bWl0aGFsaUBleGFtcGxlLmNvbTp0cmFpbGJsYXplcg==
         String token = null;
         String username = null;
 
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
 //          Extracting token value from request header.
             token = requestHeader.substring(7);
-
+            log.info("Token - {}", token);
 //          Extracting username from token
             try {
                 username = this.jwtHelper.getUsernameFromToken(token);
+                log.info("Username - {}", username);
             } catch (IllegalArgumentException e) {
                 log.error("Illegal Argument while fetching username from tokem....");
                 e.printStackTrace();
@@ -81,7 +92,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //              Creating Authentication
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//              Setting Authentication
+                log.info("Set Authentication successful {}", authentication);
+//              Setting Authentication to security context
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
                 log.info("Token Validation Failed...!");
