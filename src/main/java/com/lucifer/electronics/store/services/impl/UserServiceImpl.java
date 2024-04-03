@@ -125,6 +125,7 @@ public class UserServiceImpl implements UserService {
 //          Creating path to delete image from destination folder
             Path path = Paths.get(imageFileDestination);
 //          Deleting image file
+            logger.info("Deleting file present in destination");
             Files.delete(path);
         } catch (NoSuchFileException e) {
             logger.error("User Image does not exist in folder");

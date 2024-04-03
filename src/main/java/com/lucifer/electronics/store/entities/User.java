@@ -49,6 +49,9 @@ public class User implements UserDetails { // Implementing UserDetails Interface
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Cart cart;
+
     /**
      * This method is responsible for retrieving the authorities (roles) associated with a user
      * and converting them into a collection of SimpleGrantedAuthority objects which can be used by Spring Security

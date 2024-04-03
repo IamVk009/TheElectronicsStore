@@ -156,6 +156,8 @@ public class SecurityConfig {
 //              making API "/user/create" public & allowing it to be accessed by anyone without requiring authentication.
                 .authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.POST, "/user/create")
                         .permitAll())
+//              configuring API "/user/delete/**" so that, users can only be deleted by the User who has Admin Role
+                .authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.DELETE, "/user/delete/**").hasRole("ADMIN"))
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
