@@ -5,6 +5,7 @@ import com.lucifer.electronics.store.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -151,6 +152,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(requests -> requests.requestMatchers("/auth/login")
+                        .permitAll())
+//              making API "/user/create" public & allowing it to be accessed by anyone without requiring authentication.
+                .authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.POST, "/user/create")
                         .permitAll())
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))

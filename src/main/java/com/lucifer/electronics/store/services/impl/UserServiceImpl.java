@@ -2,9 +2,11 @@ package com.lucifer.electronics.store.services.impl;
 
 import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.UserDto;
+import com.lucifer.electronics.store.entities.Role;
 import com.lucifer.electronics.store.entities.User;
 import com.lucifer.electronics.store.exceptions.ResourceNotFoundException;
 import com.lucifer.electronics.store.helper.Helper;
+import com.lucifer.electronics.store.repositories.RoleRepository;
 import com.lucifer.electronics.store.repositories.UserRepository;
 import com.lucifer.electronics.store.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -24,6 +26,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,9 +42,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Value("${user.profile.image.path}")
     private String uploadImagePath;
+
+    @Value("${role.normal.id}")
+    private String role_normal_id;
 
     @Override
     public void createUser(UserDto userDto) {
@@ -49,7 +58,12 @@ public class UserServiceImpl implements UserService {
         userDto.setUserId(userId);
 //      Encoding password before creating user and storing it in DB.
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userRepository.save(dtoToEntity(userDto));
+//      UserDto -> User
+        User user = dtoToEntity(userDto);
+//      Assigning normal role to user by default before saving it to DB.
+        Role role = roleRepository.findById(role_normal_id).get();
+        user.getRoles().add(role);
+        userRepository.save(user);
     }
 
     @Override

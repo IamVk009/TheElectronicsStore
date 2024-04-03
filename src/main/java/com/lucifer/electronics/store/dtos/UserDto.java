@@ -1,10 +1,14 @@
 package com.lucifer.electronics.store.dtos;
 
+import com.lucifer.electronics.store.entities.Role;
 import com.lucifer.electronics.store.validate.ImageNameValid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -37,4 +41,6 @@ public class UserDto {
 //  Validating image with Custom Validator
     @ImageNameValid(message = "Please enter valid image name")
     private String imageName;
+
+    private Set<RoleDto> roles = new HashSet<>();
 }
