@@ -26,6 +26,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+//@CrossOrigin(origins="http://localhost:4200",
+//             allowedHeaders = {"Authorization", "Accept", "Content-Type"},
+//             allowCredentials = "true",
+//             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+//             maxAge = 3600)
 public class UserController {
 
     Logger logger = LoggerFactory.getLogger(UserController.class);

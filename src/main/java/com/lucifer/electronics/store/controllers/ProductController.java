@@ -18,6 +18,11 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/product")
+//@CrossOrigin(origins="http://localhost:4200",
+//             allowedHeaders = {"Authorization", "Accept", "Content-Type"},
+//             allowCredentials = "true",
+//             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+//             maxAge = 3600)
 public class ProductController {
 
     @Autowired
@@ -56,7 +61,7 @@ public class ProductController {
 
     @GetMapping("/all")
     public ResponseEntity<PageableResponse<ProductDto>> getAllProducts(@RequestParam(defaultValue = "1") int pageNumber,
-                                                                       @RequestParam(defaultValue = "0") int pageSize,
+                                                                       @RequestParam(defaultValue = "2") int pageSize,
                                                                        @RequestParam(defaultValue = "productTitle") String sortBy,
                                                                        @RequestParam(defaultValue = "asc") String sortDirection) {
         PageableResponse<ProductDto> allProducts = productService.getAllProducts(pageNumber, pageSize, sortBy, sortDirection);

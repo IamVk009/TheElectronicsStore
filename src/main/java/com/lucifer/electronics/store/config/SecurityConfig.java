@@ -3,6 +3,7 @@ package com.lucifer.electronics.store.config;
 import com.lucifer.electronics.store.security.JwtAuthenticationEntryPoint;
 import com.lucifer.electronics.store.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +22,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableMethodSecurity
@@ -152,7 +158,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
                 .authorizeHttpRequests(requests -> requests.requestMatchers("/auth/login")
                         .permitAll())
 //              making API "/user/create" public & allowing it to be accessed by anyone without requiring authentication.
@@ -175,5 +180,58 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+//  Way - 1 : CORS Configuration
+
+    /**
+     * configuring a CORS (Cross-Origin Resource Sharing) filter using Spring Boot. This method creates and configures a FilterRegistrationBean for the CORS filter.
+     * CORS is a mechanism that allows resources on a web page to be requested from another domain outside the domain from which the resource originated. (CORS is a mechanism that indicates to the application to load up the resources or not when the request is coming from different origin.)
+     * This configuration sets up a CORS filter that allows cross-origin requests from specified origins, headers, and methods, and registers it with the Spring application context.
+     *
+     * @return  the configured FilterRegistrationBean instance, which will be registered as a bean in the Spring application context.
+     */
+
+    @Bean
+    public FilterRegistrationBean processCorsFilter(){
+//      UrlBasedCorsConfigurationSource class defines a source of CORS configuration based on URL patterns.
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+//      CorsConfiguration class represents the CORS configuration for a specific set of origins, HTTP methods, headers, etc.
+        CorsConfiguration config = new CorsConfiguration();
+
+//      Specifying whether the browser should include any cookies associated with the request origin in the request.
+        config.setAllowCredentials(true);
+//        Specifying the allowed origins (domains) from which requests can be made.
+//        config.setAllowedOrigins(Arrays.asList("https://domain1.com", "https://domain2.com"));
+
+//      Specifying the allowed origin from which requests can be made
+        config.addAllowedOrigin("http://localhost:4200");
+
+//      Adding allowed headers that can be included in the request.
+        config.addAllowedHeader("Authorization");
+        config.addAllowedHeader("Content-Type");
+        config.addAllowedHeader("Accept");
+//        config.addAllowedHeader("*");
+
+//      Adding allowed HTTP methods for requests.
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("OPTIONS");
+
+//      Specifying how long (in seconds) the results of a preflight request (OPTIONS) can be cached.
+        config.setMaxAge(3600L);
+
+//      Registering the CORS configuration to apply to all URL paths.
+        source.registerCorsConfiguration("/**", config);
+
+        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+
+//      Setting the order of the filter in the filter chain. Negative values indicate that the filter should be applied before the default filters.
+//      Setting the order of the current bean so that it gets preference in order to get registered early.
+        bean.setOrder(-100);
+        return bean;
     }
 }

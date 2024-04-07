@@ -34,8 +34,13 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/auth")
+// Way - 2 : CORS Configuration
 // Allowing cross-origin requests from applications running on all types of host. In our case its Angular Application which is running on 'http://localhost:4200'
-@CrossOrigin(origins="http://localhost:4200")
+//@CrossOrigin(origins="http://localhost:4200",
+//             allowedHeaders = {"Authorization", "Accept", "Content-Type"},
+//             allowCredentials = "true",
+//             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+//             maxAge = 3600)
 public class AuthController {
 
     @Autowired
