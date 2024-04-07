@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     private String role_normal_id;
 
     @Override
-    public void createUser(UserDto userDto) {
+    public UserDto createUser(UserDto userDto) {
         String userId = UUID.randomUUID().toString();
         userDto.setUserId(userId);
 //      Encoding password before creating user and storing it in DB.
@@ -63,7 +63,8 @@ public class UserServiceImpl implements UserService {
 //      Assigning normal role to user by default before saving it to DB.
         Role role = roleRepository.findById(role_normal_id).get();
         user.getRoles().add(role);
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return entityToDto(savedUser);
     }
 
     @Override
@@ -142,6 +143,11 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findByNameContainingIgnoreCase(name);
         List<UserDto> userDtoList = users.stream().map(user -> entityToDto(user)).toList();
         return userDtoList;
+    }
+
+    @Override
+    public Optional<User> getUserByEmailForLoginWithGoogle(String email) {
+        return userRepository.findByEmail(email);
     }
 
 

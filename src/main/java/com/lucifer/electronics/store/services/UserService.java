@@ -6,9 +6,10 @@ import com.lucifer.electronics.store.entities.User;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
-    void createUser(UserDto userDto);
+    UserDto createUser(UserDto userDto);
 
     PageableResponse<UserDto> getAllUsers(int pageNumber, int pageSize, String sortBy, String sortDirection);
 
@@ -21,4 +22,6 @@ public interface UserService {
     void deleteUser(String userId) throws IOException;
 
     List<UserDto> searchUser(String name);
+
+    Optional<User> getUserByEmailForLoginWithGoogle(String email);
 }
