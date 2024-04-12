@@ -1,5 +1,6 @@
 package com.lucifer.electronics.store.controllers;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
    It can be applied at class or method level and is used to categorize and organize them in a meaningful way.
 */
 @Tag(name = "Home Controller")
+@SecurityRequirement(name = "schemer")
 public class HomeController {
 
     @GetMapping

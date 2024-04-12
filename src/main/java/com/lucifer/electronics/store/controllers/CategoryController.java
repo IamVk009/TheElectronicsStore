@@ -4,6 +4,7 @@ import com.lucifer.electronics.store.dtos.*;
 import com.lucifer.electronics.store.services.CategoryService;
 import com.lucifer.electronics.store.services.FileService;
 import com.lucifer.electronics.store.services.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/category")
 @Tag(name="Category Controller", description = "REST APIs to perform Category related operations")
+@SecurityRequirement(name = "schemer")
 public class CategoryController {
 
     @Autowired

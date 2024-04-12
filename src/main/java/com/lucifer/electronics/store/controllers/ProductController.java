@@ -5,6 +5,7 @@ import com.lucifer.electronics.store.dtos.ImageResponseMessage;
 import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.ProductDto;
 import com.lucifer.electronics.store.services.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/product")
 @Tag(name = "Product Controller", description = "REST APIs to perform Product related operations")
+@SecurityRequirement(name = "schemer")
 //@CrossOrigin(origins="http://localhost:4200",
 //             allowedHeaders = {"Authorization", "Accept", "Content-Type"},
 //             allowCredentials = "true",

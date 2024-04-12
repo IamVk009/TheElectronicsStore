@@ -9,6 +9,7 @@ import com.lucifer.electronics.store.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -30,6 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @Tag(name = "User APIs", description = "REST APIs to perform User related Operations")
+@SecurityRequirement(name = "schemer")
 //@CrossOrigin(origins="http://localhost:4200",
 //             allowedHeaders = {"Authorization", "Accept", "Content-Type"},
 //             allowCredentials = "true",
