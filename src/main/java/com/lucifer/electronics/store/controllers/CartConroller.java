@@ -4,6 +4,7 @@ import com.lucifer.electronics.store.dtos.AddItemToCartRequest;
 import com.lucifer.electronics.store.dtos.ApiResponseMessage;
 import com.lucifer.electronics.store.dtos.CartDto;
 import com.lucifer.electronics.store.services.CartService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/cart")
+@Tag(name = "Cart Controller", description = "REST APIs to perform Cart Related Operations")
 public class CartConroller {
 
     @Autowired

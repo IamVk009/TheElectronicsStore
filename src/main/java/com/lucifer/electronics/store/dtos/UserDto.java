@@ -1,6 +1,5 @@
 package com.lucifer.electronics.store.dtos;
 
-import com.lucifer.electronics.store.entities.Role;
 import com.lucifer.electronics.store.validate.ImageNameValid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

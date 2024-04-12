@@ -11,6 +11,7 @@ import com.lucifer.electronics.store.entities.User;
 import com.lucifer.electronics.store.exceptions.BadApiRequestException;
 import com.lucifer.electronics.store.security.JwtHelper;
 import com.lucifer.electronics.store.services.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication Controller", description = "REST APIs to perform Authentication of the users")
 // Way - 2 : CORS Configuration
 // Allowing cross-origin requests from applications running on all types of host. In our case its Angular Application which is running on 'http://localhost:4200'
 //@CrossOrigin(origins="http://localhost:4200",

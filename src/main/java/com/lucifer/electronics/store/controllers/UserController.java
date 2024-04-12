@@ -6,6 +6,10 @@ import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.UserDto;
 import com.lucifer.electronics.store.services.FileService;
 import com.lucifer.electronics.store.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -19,13 +23,13 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@Tag(name = "User APIs", description = "REST APIs to perform User related Operations")
 //@CrossOrigin(origins="http://localhost:4200",
 //             allowedHeaders = {"Authorization", "Accept", "Content-Type"},
 //             allowCredentials = "true",
@@ -46,6 +50,12 @@ public class UserController {
 
     //  Always send JSON as a response from controller instead of string and other type of data.
     @PostMapping("/create")
+    @Operation(summary = "Create new User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success | Ok"),
+            @ApiResponse(responseCode = "201", description = "New Use Created Successfully"),
+            @ApiResponse(responseCode = "401", description = "You are not authorized to perform this operation")
+    })
     public ResponseEntity<ApiResponseMessage> createUser(@Valid @RequestBody UserDto userDto) {
         userService.createUser(userDto);
         ApiResponseMessage message = ApiResponseMessage.builder()
@@ -57,6 +67,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
+    @Operation(summary = "Get the data of all users", tags = {"User APIs"})
     public ResponseEntity<PageableResponse<UserDto>> getAllUsers(@RequestParam(defaultValue = "0") int pageNumber,
                                                                  @RequestParam(defaultValue = "10") int pageSize,
                                                                  @RequestParam(defaultValue = "userId") String sortBy,
@@ -67,6 +78,7 @@ public class UserController {
     }
 
     @GetMapping("/id/{userId}")
+    @Operation(summary = "Get data of single user by userId")
     public ResponseEntity<UserDto> getUserById(@PathVariable String userId) {
         UserDto user = userService.getUserById(userId);
         logger.info("User with Id = " + userId + " Returned Successfully...");

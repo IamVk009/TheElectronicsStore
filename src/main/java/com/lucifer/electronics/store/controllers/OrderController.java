@@ -2,6 +2,7 @@ package com.lucifer.electronics.store.controllers;
 
 import com.lucifer.electronics.store.dtos.*;
 import com.lucifer.electronics.store.services.OrderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/order")
+@Tag(name = "Order Controller", description = "REST APIs to perform Order Related operations")
 public class OrderController {
 
     @Autowired

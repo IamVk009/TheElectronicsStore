@@ -5,12 +5,12 @@ import com.lucifer.electronics.store.dtos.ImageResponseMessage;
 import com.lucifer.electronics.store.dtos.PageableResponse;
 import com.lucifer.electronics.store.dtos.ProductDto;
 import com.lucifer.electronics.store.services.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +18,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/product")
+@Tag(name = "Product Controller", description = "REST APIs to perform Product related operations")
 //@CrossOrigin(origins="http://localhost:4200",
 //             allowedHeaders = {"Authorization", "Accept", "Content-Type"},
 //             allowCredentials = "true",
