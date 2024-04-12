@@ -154,6 +154,13 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter authenticationFilter;
 
+    private final String [] PUBLIC_URLS = {
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -165,6 +172,9 @@ public class SecurityConfig {
                         .permitAll())
 //              making API "/auth/google" public & allowing it to be accessed by anyone without requiring authentication.
                 .authorizeHttpRequests(requests -> requests.requestMatchers("/auth/google")
+                        .permitAll())
+//              making URLs related to swagger public & allowing it to be accessed by anyone without requiring authentication.
+                .authorizeHttpRequests(requests -> requests.requestMatchers(PUBLIC_URLS)
                         .permitAll())
 //              configuring API "/user/delete/**" so that, users can only be deleted by the User who has Admin Role
                 .authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.DELETE, "/user/delete/**").hasRole("ADMIN"))
